@@ -8,13 +8,13 @@ QuickEPUB is for developers that want a quick and easy way to export simple EPUB
 
 ## Sample Usage ##
 
-`
+```
 Epub doc = new Epub("Test Title", "Test Author");
 doc.AddSection("Chapter 1", "<p>This is chapter 1.</p>");
-doc.AddSection("Chapter 2", "<p>This is chapter 2.</p>");
+doc.AddSection("Chapter 2", "<p>This is chapter 2.</p>")`
 
 using (FileStream fs = new FileStream("test.epub", FileMode.Create))
 {
     doc.Export(fs);
 }
-`
+```
