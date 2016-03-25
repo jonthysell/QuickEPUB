@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Epub.cs" />
+    <Compile Include="EpubResource.cs" />
     <Compile Include="EpubSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

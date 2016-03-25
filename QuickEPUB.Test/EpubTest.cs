@@ -39,10 +39,22 @@ namespace QuickEPUB.Test
         public void EpubTest_CreateEpub()
         {
             Epub doc = new Epub("Test Title", "Test Author");
-            doc.AddSection("Chapter 1", "<p>This is chapter 1.</p>");
-            doc.AddSection("Chapter 2", "<p>This is chapter 2.</p>");
+            doc.AddSection("Section 1", "<p>This is section 1.</p>");
 
-            using (FileStream fs = new FileStream("test.epub", FileMode.Create))
+            using (FileStream fs = new FileStream("EpubTest_CreateEpub.epub", FileMode.Create))
+            {
+                doc.Export(fs);
+            }
+        }
+
+        [TestMethod]
+        public void EpubTest_CreateEpubWithResource()
+        {
+            Epub doc = new Epub("Test Title", "Test Author");
+            doc.AddSection("Section 1", "<p><img src=\"test.png\" alt=\"test\"/></p>");
+            doc.AddResource("test.png", EpubResourceType.PNG, new FileStream("test.png", FileMode.Open));
+
+            using (FileStream fs = new FileStream("EpubTest_CreateEpubWithResource.epub", FileMode.Create))
             {
                 doc.Export(fs);
             }

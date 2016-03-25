@@ -83,12 +83,22 @@ namespace QuickEPUB
         }
         private List<EpubSection> _sections;
 
+        public IEnumerable<EpubResource> Resources
+        {
+            get
+            {
+                return _resources.AsEnumerable();
+            }
+        }
+        private List<EpubResource> _resources;
+
         public Epub(string title, string author)
         {
             Title = title;
             Author = author;
 
             _sections = new List<EpubSection>();
+            _resources = new List<EpubResource>();
         }
 
         public void AddSection(string title, string body)
@@ -97,17 +107,23 @@ namespace QuickEPUB
             _sections.Add(section);
         }
 
-        public void Export(Stream output)
+        public void AddResource(string path, EpubResourceType resourceType, Stream resourceStream)
         {
-            if (null == output)
+            EpubResource resource = new EpubResource(path, resourceType, resourceStream);
+            _resources.Add(resource);
+        }
+
+        public void Export(Stream outputStream)
+        {
+            if (null == outputStream)
             {
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException("outputStream");
             }
 
             string lang = String.IsNullOrWhiteSpace(Language) ? CultureInfo.CurrentCulture.Name : Language;
             string uid = String.IsNullOrWhiteSpace(UID) ? Guid.NewGuid().ToString() : UID;
 
-            using (ZipArchive archive = new ZipArchive(output, ZipArchiveMode.Create))
+            using (ZipArchive archive = new ZipArchive(outputStream, ZipArchiveMode.Create))
             {
                 // Add mimetype
                 ZipArchiveEntry mimetype = archive.CreateEntry("mimetype", CompressionLevel.NoCompression);
@@ -133,8 +149,21 @@ namespace QuickEPUB
                     for (int i = 0; i < _sections.Count; i++)
                     {
                         string sectionId = String.Format("section{0}", i + 1);
-                        itemSB.AppendLine(String.Format(ContentOpfContentItemTemplate, sectionId));
+                        itemSB.AppendLine(String.Format(ContentOpfItemTemplate
+                            ,sectionId
+                            ,sectionId + ".html"
+                            ,"application/xhtml+xml"));
+
                         spineSB.AppendLine(String.Format(ContentOpfSpineItemRefTemplate, sectionId));
+                    }
+
+                    for (int i = 0; i < _resources.Count; i++)
+                    {
+                        string resourceId = String.Format("resource{0}", i + 1);
+                        itemSB.AppendLine(String.Format(ContentOpfItemTemplate
+                            ,resourceId
+                            ,_resources[i].Path
+                            ,_resources[i].MediaType));
                     }
 
                     string content = String.Format(ContentOpfTemplate
@@ -148,9 +177,9 @@ namespace QuickEPUB
                     sw.Write(content);
                 }
 
-                // Add toc.nx
-                ZipArchiveEntry tocNx = archive.CreateEntry("OEBPS/toc.ncx", CompressionLevel.Optimal);
-                using (StreamWriter sw = new StreamWriter(tocNx.Open()))
+                // Add toc.ncx
+                ZipArchiveEntry tocNcx = archive.CreateEntry("OEBPS/toc.ncx", CompressionLevel.Optimal);
+                using (StreamWriter sw = new StreamWriter(tocNcx.Open()))
                 {
                     StringBuilder navLabelSB = new StringBuilder();
 
@@ -188,10 +217,17 @@ namespace QuickEPUB
                         sw.Write(content);
                     }
                 }
+
+                // Add Resources
+                for (int i = 0; i < _resources.Count; i++)
+                {
+                    ZipArchiveEntry resourceEntry = archive.CreateEntry(String.Format("OEBPS/{0}", _resources[i].Path), CompressionLevel.Optimal);
+                    _resources[i].ResourceStream.CopyTo(resourceEntry.Open());
+                }
             }
         }
 
-        private static string ContainerXmlTemplate = @"<?xml version=""1.0""?>
+        private const string ContainerXmlTemplate = @"<?xml version=""1.0""?>
 <container version=""1.0"" xmlns=""urn:oasis:names:tc:opendocument:xmlns:container"">
   <rootfiles>
     <rootfile full-path=""OEBPS/content.opf""
@@ -200,7 +236,7 @@ namespace QuickEPUB
 </container>
 ";
 
-        private static string ContentOpfTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
+        private const string ContentOpfTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <package xmlns=""http://www.idpf.org/2007/opf"" xmlns:dc=""http://purl.org/dc/elements/1.1/"" unique-identifier=""bookid"" version=""2.0"">
   <metadata>
     <dc:title>{0}</dc:title>
@@ -218,10 +254,10 @@ namespace QuickEPUB
 </package>
 ";
 
-        private static string ContentOpfContentItemTemplate = @"<item id=""{0}"" href=""{0}.html"" media-type=""application/xhtml+xml""/>";
-        private static string ContentOpfSpineItemRefTemplate = @"<itemref idref=""{0}""/>";
+        private const string ContentOpfItemTemplate = @"<item id=""{0}"" href=""{1}"" media-type=""{2}""/>";
+        private const string ContentOpfSpineItemRefTemplate = @"<itemref idref=""{0}""/>";
 
-        private static string TocNcxTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
+        private const string TocNcxTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <!DOCTYPE ncx PUBLIC ""-//NISO//DTD ncx 2005-1//EN"" ""http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"">
 <ncx xmlns=""http://www.daisy.org/z3986/2005/ncx/"" version=""2005-1"">
   <head>
@@ -239,7 +275,7 @@ namespace QuickEPUB
 </ncx>
 ";
 
-        private static string TocNcxNavPointTemplate = @"    <navPoint id=""{0}"" playOrder=""{1}"">
+        private const string TocNcxNavPointTemplate = @"    <navPoint id=""{0}"" playOrder=""{1}"">
       <navLabel>
         <text>{2}</text>
       </navLabel>
@@ -247,7 +283,7 @@ namespace QuickEPUB
     </navPoint>
 ";
 
-        private static string EpubSectionHtmlTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
+        private const string EpubSectionHtmlTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN"" ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 <head>
