@@ -64,10 +64,36 @@ namespace QuickEPUB
         }
         private string _body;
 
-        public EpubSection(string title, string bodyHtml)
+        public bool HasCss
+        {
+            get
+            {
+                return !String.IsNullOrWhiteSpace(CssPath);
+            }
+        }
+
+        public string CssPath
+        {
+            get
+            {
+                return _cssPath;
+            }
+            set
+            {
+                if (null == value)
+                {
+                    value = "";
+                }
+                _cssPath = value.Trim();
+            }
+        }
+        private string _cssPath;
+
+        public EpubSection(string title, string bodyHtml, string cssPath = "")
         {
             Title = title;
             BodyHtml = bodyHtml;
+            CssPath = cssPath;
         }
     }
 }

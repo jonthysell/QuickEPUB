@@ -101,9 +101,9 @@ namespace QuickEPUB
             _resources = new List<EpubResource>();
         }
 
-        public void AddSection(string title, string body)
+        public void AddSection(string title, string body, string cssPath = "")
         {
-            EpubSection section = new EpubSection(title, body);
+            EpubSection section = new EpubSection(title, body, cssPath);
             _sections.Add(section);
         }
 
@@ -210,9 +210,21 @@ namespace QuickEPUB
                     ZipArchiveEntry sectionHtml = archive.CreateEntry(String.Format("OEBPS/{0}.html", sectionId), CompressionLevel.Optimal);
                     using (StreamWriter sw = new StreamWriter(sectionHtml.Open()))
                     {
-                        string content = String.Format(EpubSectionHtmlTemplate
-                            ,_sections[i].Title
-                            ,_sections[i].BodyHtml);
+                        string content = "";
+
+                        if (_sections[i].HasCss)
+                        {
+                            content = String.Format(EpubSectionHtmlWithCSSTemplate
+                                ,_sections[i].Title
+                                ,_sections[i].CssPath
+                                ,_sections[i].BodyHtml);
+                        }
+                        else
+                        {
+                            content = String.Format(EpubSectionHtmlTemplate
+                                , _sections[i].Title
+                                , _sections[i].BodyHtml);
+                        }
 
                         sw.Write(content);
                     }
@@ -291,6 +303,19 @@ namespace QuickEPUB
 </head>
 <body>
 {1}
+</body>
+</html>
+";
+
+        private const string EpubSectionHtmlWithCSSTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN"" ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
+<html xmlns=""http://www.w3.org/1999/xhtml"">
+<head>
+<title>{0}</title>
+<link type=""text/css"" rel=""stylesheet"" href=""{1}"" />
+</head>
+<body>
+{2}
 </body>
 </html>
 ";
