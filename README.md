@@ -43,6 +43,7 @@ using (FileStream fs = new FileStream("sample.epub", FileMode.Create))
 ```
 
 The end result will be an EPUB named "sample.epub" with three sections in its table of contents:
+
 1. Chapter 1
 2. Chpater 2
 3. Chapter 3
