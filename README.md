@@ -49,3 +49,5 @@ The end result will be an EPUB named "sample.epub" with three sections in its ta
 3. Chapter 3
 
 The EPUB will also contain the two specified resources: "image.jpg"" and "custom.css".
+
+Copyright (c) 2016 Jon Thysell
