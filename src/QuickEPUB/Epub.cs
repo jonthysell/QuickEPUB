@@ -1,28 +1,5 @@
-﻿// 
-// Epub.cs
-//  
-// Author:
-//       Jon Thysell <thysell@gmail.com>
-// 
-// Copyright (c) 2016 Jon Thysell <http://jonthysell.com>
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+﻿// Copyright (c) Jon Thysell <http://jonthysell.com>
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -44,7 +21,7 @@ namespace QuickEPUB
             }
             set
             {
-                if (String.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentNullException();
                 }
@@ -61,7 +38,7 @@ namespace QuickEPUB
             }
             set
             {
-                if (String.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentNullException();
                 }
@@ -81,7 +58,7 @@ namespace QuickEPUB
                 return _sections.AsEnumerable();
             }
         }
-        private List<EpubSection> _sections;
+        private readonly List<EpubSection> _sections = new List<EpubSection>();
 
         public IEnumerable<EpubResource> Resources
         {
@@ -90,15 +67,12 @@ namespace QuickEPUB
                 return _resources.AsEnumerable();
             }
         }
-        private List<EpubResource> _resources;
+        private readonly List<EpubResource> _resources = new List<EpubResource>();
 
         public Epub(string title, string author)
         {
             Title = title;
             Author = author;
-
-            _sections = new List<EpubSection>();
-            _resources = new List<EpubResource>();
         }
 
         public void AddSection(string title, string body, string cssPath = "")
@@ -115,13 +89,13 @@ namespace QuickEPUB
 
         public void Export(Stream outputStream)
         {
-            if (null == outputStream)
+            if (outputStream is null)
             {
-                throw new ArgumentNullException("outputStream");
+                throw new ArgumentNullException(nameof(outputStream));
             }
 
-            string lang = String.IsNullOrWhiteSpace(Language) ? CultureInfo.CurrentCulture.Name : Language;
-            string uid = String.IsNullOrWhiteSpace(UID) ? Guid.NewGuid().ToString() : UID;
+            string lang = string.IsNullOrWhiteSpace(Language) ? CultureInfo.CurrentCulture.Name : Language;
+            string uid = string.IsNullOrWhiteSpace(UID) ? Guid.NewGuid().ToString() : UID;
 
             using (ZipArchive archive = new ZipArchive(outputStream, ZipArchiveMode.Create))
             {
@@ -148,31 +122,31 @@ namespace QuickEPUB
 
                     for (int i = 0; i < _sections.Count; i++)
                     {
-                        string sectionId = String.Format("section{0}", i + 1);
-                        itemSB.AppendLine(String.Format(ContentOpfItemTemplate
-                            ,sectionId
-                            ,sectionId + ".html"
-                            ,"application/xhtml+xml"));
+                        string sectionId = string.Format("section{0}", i + 1);
+                        itemSB.AppendLine(string.Format(ContentOpfItemTemplate
+                            , sectionId
+                            , sectionId + ".html"
+                            , "application/xhtml+xml"));
 
-                        spineSB.AppendLine(String.Format(ContentOpfSpineItemRefTemplate, sectionId));
+                        spineSB.AppendLine(string.Format(ContentOpfSpineItemRefTemplate, sectionId));
                     }
 
                     for (int i = 0; i < _resources.Count; i++)
                     {
-                        string resourceId = String.Format("resource{0}", i + 1);
-                        itemSB.AppendLine(String.Format(ContentOpfItemTemplate
-                            ,resourceId
-                            ,_resources[i].Path
-                            ,_resources[i].MediaType));
+                        string resourceId = string.Format("resource{0}", i + 1);
+                        itemSB.AppendLine(string.Format(ContentOpfItemTemplate
+                            , resourceId
+                            , _resources[i].Path
+                            , _resources[i].MediaType));
                     }
 
-                    string content = String.Format(ContentOpfTemplate
-                        ,Title
-                        ,Author
-                        ,uid
-                        ,lang
-                        ,itemSB.ToString()
-                        ,spineSB.ToString());
+                    string content = string.Format(ContentOpfTemplate
+                        , Title
+                        , Author
+                        , uid
+                        , lang
+                        , itemSB.ToString()
+                        , spineSB.ToString());
 
                     sw.Write(content);
                 }
@@ -187,17 +161,17 @@ namespace QuickEPUB
                     {
                         EpubSection section = _sections[i];
 
-                        string sectionId = String.Format("section{0}", i + 1);
-                        navLabelSB.AppendLine(String.Format(TocNcxNavPointTemplate
-                            ,sectionId
-                            ,(i+1).ToString()
-                            ,section.Title));
+                        string sectionId = string.Format("section{0}", i + 1);
+                        navLabelSB.AppendLine(string.Format(TocNcxNavPointTemplate
+                            , sectionId
+                            , (i + 1).ToString()
+                            , section.Title));
                     }
 
-                    string content = String.Format(TocNcxTemplate
-                        ,uid
-                        ,Title
-                        ,navLabelSB.ToString());
+                    string content = string.Format(TocNcxTemplate
+                        , uid
+                        , Title
+                        , navLabelSB.ToString());
 
                     sw.Write(content);
                 }
@@ -205,23 +179,23 @@ namespace QuickEPUB
                 // Add Sections
                 for (int i = 0; i < _sections.Count; i++)
                 {
-                    string sectionId = String.Format("section{0}", i + 1);
+                    string sectionId = string.Format("section{0}", i + 1);
 
-                    ZipArchiveEntry sectionHtml = archive.CreateEntry(String.Format("OEBPS/{0}.html", sectionId), CompressionLevel.Optimal);
+                    ZipArchiveEntry sectionHtml = archive.CreateEntry(string.Format("OEBPS/{0}.html", sectionId), CompressionLevel.Optimal);
                     using (StreamWriter sw = new StreamWriter(sectionHtml.Open()))
                     {
                         string content = "";
 
                         if (_sections[i].HasCss)
                         {
-                            content = String.Format(EpubSectionHtmlWithCSSTemplate
-                                ,_sections[i].Title
-                                ,_sections[i].CssPath
-                                ,_sections[i].BodyHtml);
+                            content = string.Format(EpubSectionHtmlWithCSSTemplate
+                                , _sections[i].Title
+                                , _sections[i].CssPath
+                                , _sections[i].BodyHtml);
                         }
                         else
                         {
-                            content = String.Format(EpubSectionHtmlTemplate
+                            content = string.Format(EpubSectionHtmlTemplate
                                 , _sections[i].Title
                                 , _sections[i].BodyHtml);
                         }
@@ -233,7 +207,7 @@ namespace QuickEPUB
                 // Add Resources
                 for (int i = 0; i < _resources.Count; i++)
                 {
-                    ZipArchiveEntry resourceEntry = archive.CreateEntry(String.Format("OEBPS/{0}", _resources[i].Path), CompressionLevel.Optimal);
+                    ZipArchiveEntry resourceEntry = archive.CreateEntry(string.Format("OEBPS/{0}", _resources[i].Path), CompressionLevel.Optimal);
                     _resources[i].ResourceStream.CopyTo(resourceEntry.Open());
                 }
             }
