@@ -1,6 +1,7 @@
 name: Pull Request Validation
 
 env:
+  Product: QuickEPUB
   BinDir: ./src/QuickEPUB/bin
   SolutionFile: ./src/QuickEPUB.sln
 
@@ -34,5 +35,5 @@ jobs:
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ matrix.configuration }}Binaries
+        name: ${{ env.Product }}${{ matrix.configuration }}Binaries
         path: ${{ env.BinDir }}/${{ matrix.configuration }}/

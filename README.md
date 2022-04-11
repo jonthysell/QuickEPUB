@@ -1,5 +1,7 @@
 # QuickEPUB #
 
+[![CI Build](https://github.com/jonthysell/QuickEPUB/actions/workflows/ci.yml/badge.svg)](https://github.com/jonthysell/QuickEPUB/actions/workflows/ci.yml)
+
 QuickEPUB is an open-source .NET library for generating simple eBooks in the EPUB format.
 
 EPUB is a very powerful and flexible format for publishing eBooks. Most open-source libraries for creating EPUBs are just as powerful and flexible, but often require you to really understand how EPUBs work in order to use them effectively.
