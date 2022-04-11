@@ -10,6 +10,10 @@ on:
     branches:
       - main
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   pr_build_and_test:
     name: PR Build and Test

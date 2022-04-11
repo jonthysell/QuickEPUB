@@ -1,0 +1,75 @@
+name: Publish Release
+
+env:
+  Product: QuickEPUB
+  BinDir: ./src/QuickEPUB/bin
+  SolutionFile: ./src/QuickEPUB.sln
+  Prerelease: false
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  pub_create_github_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ env.Product }} ${{ github.ref }}
+          body: See [README.md](./README.md) for installation instructions and [CHANGELOG.md](./CHANGELOG.md) for specific information about this release.
+          draft: false
+          prerelease: ${{ env.Prerelease }}
+
+  pub_build:
+    name: Publish Build
+    runs-on: windows-latest
+    needs: pub_create_github_release
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build Solution
+      run: dotnet build --configuration Release ${{ env.SolutionFile }}
+
+    - name: Set Environment Variables
+      run: |
+        $NugetPackagePath = Get-ChildItem -Recurse ${{ env.BinDir }}/*.nupkg
+        echo "NUGET_PACKAGE_PATH=$NugetPackagePath" >> $env:GITHUB_ENV
+        echo "NUGET_PACKAGE_NAME=$(Split-Path -Leaf $NugetPackagePath)" >> $env:GITHUB_ENV
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.pub_create_github_release.outputs.upload_url }}
+        asset_path: ${{ env.NUGET_PACKAGE_PATH }}
+        asset_name: ${{ env.NUGET_PACKAGE_NAME }}
+        asset_content_type: application/zip
+    
+    - name: Publish NuGet
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} --skip-duplicate --api-key ${{ env.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

@@ -6,11 +6,12 @@
     <Authors>Jon Thysell</Authors>
     <Copyright>Copyright © 2016-2022 Jon Thysell</Copyright>
     <Description>An open-source .NET library for generating simple eBooks in the EPUB format.</Description>
-    <RepositoryUrl>https://github.com/jonthysell/QuickEPUB</RepositoryUrl>
+    <RepositoryUrl>https://github.com/jonthysell/QuickEPUB.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/jonthysell/QuickEPUB</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageTags>epub;ebook;e-book</PackageTags>
     <Version>0.9.0</Version>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
