@@ -16,7 +16,7 @@ QuickEPUB is for developers that want a quick and easy way to take HTML content 
 
 ## Sample Code ##
 
-```
+```cs
 // Create an Epub instance
 Epub doc = new Epub("Book Title", "Author Name");
 
@@ -45,7 +45,7 @@ using (FileStream fs = new FileStream("sample.epub", FileMode.Create))
 The end result will be an EPUB named "sample.epub" with three sections in its table of contents:
 
 1. Chapter 1
-2. Chpater 2
+2. Chapter 2
 3. Chapter 3
 
 The EPUB will also contain the two specified resources: "image.jpg"" and "custom.css".
