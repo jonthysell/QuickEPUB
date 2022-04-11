@@ -1,6 +1,6 @@
 # QuickEPUB #
 
-[![CI Build](https://github.com/jonthysell/QuickEPUB/actions/workflows/ci.yml/badge.svg)](https://github.com/jonthysell/QuickEPUB/actions/workflows/ci.yml)
+![License](https://img.shields.io/github/license/jonthysell/QuickEPUB.svg) [![NuGet](https://img.shields.io/nuget/v/QuickEPUB.svg)](https://www.nuget.org/packages/QuickEPUB) [![CI Build](https://github.com/jonthysell/QuickEPUB/actions/workflows/ci.yml/badge.svg)](https://github.com/jonthysell/QuickEPUB/actions/workflows/ci.yml)
 
 QuickEPUB is an open-source .NET library for generating simple eBooks in the EPUB format.
 
@@ -8,7 +8,19 @@ EPUB is a very powerful and flexible format for publishing eBooks. Most open-sou
 
 QuickEPUB is for developers that want a quick and easy way to take HTML content and export simple EPUB files from their apps.
 
+## Install ##
+
+QuickEPUB is published on NuGet Gallery: https://www.nuget.org/packages/QuickEPUB
+
+Use this command in the NuGet Package Manager console to install QuickEPUB manually:
+
+```ps
+Install-Package QuickEPUB
+```
+
 ## Usage ##
+
+Using QuickEPUB is as easy as:
 
 1. Create an `Epub` instance, specifying the title and author of the book
 2. (Optional) Specify a language and/or unique identifier (ISBN, URL, whatever)
@@ -44,19 +56,22 @@ using (FileStream fs = new FileStream("sample.epub", FileMode.Create))
 }
 ```
 
-The end result will be an EPUB named "sample.epub" with three sections in its table of contents:
+This sample code will create an EPUB named "sample.epub" with three sections in its table of contents:
 
 1. Chapter 1
 2. Chapter 2
 3. Chapter 3
 
-The EPUB will also contain the two specified resources: "image.jpg"" and "custom.css".
+The EPUB will also contain the two specified resource files: `image.jpg` and `custom.css`.
 
 ## Build ##
 
-Building this project requires a PC with the [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) installed.
+Building QuickEPUB requires:
 
-Then you should be able to run the following command to build QuickEPUB from its source folder:
+1. A PC with the [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) installed
+2. The [QuickEPUB source](https://github.com/jonthysell/QuickEPUB)
+
+Then you should be able to run the following command to build QuickEPUB from within its source folder:
 
 ```cmd
 dotnet build ./src/QuickEPUB.sln
