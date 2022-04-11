@@ -6,15 +6,15 @@ EPUB is a very powerful and flexible format for publishing eBooks. Most open-sou
 
 QuickEPUB is for developers that want a quick and easy way to take HTML content and export simple EPUB files from their apps.
 
-## Usage Overview ##
+## Usage ##
 
-1. Create an Epub instance, specifying the title and author of the book
+1. Create an `Epub` instance, specifying the title and author of the book
 2. (Optional) Specify a language and/or unique identifier (ISBN, URL, whatever)
 3. Add sections of HTML content, each of which will get an entry in the table of contents
 4. (Optional) Add any CSS/image resources that are referenced in the HTML
 5. Export the instance to a file
 
-## Sample Code ##
+### Sample Code ###
 
 ```cs
 // Create an Epub instance
@@ -50,4 +50,18 @@ The end result will be an EPUB named "sample.epub" with three sections in its ta
 
 The EPUB will also contain the two specified resources: "image.jpg"" and "custom.css".
 
-Copyright (c) 2016-2022 Jon Thysell
+## Build ##
+
+Building this project requires a PC with the [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) installed.
+
+Then you should be able to run the following command to build QuickEPUB from its source folder:
+
+```cmd
+dotnet build ./src/QuickEPUB.sln
+```
+
+## Errata ##
+
+QuickEPUB is open-source under the MIT license.
+
+Copyright (c) 2016-2022 Jon Thysell.
