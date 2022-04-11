@@ -38,7 +38,7 @@ doc.AddResource("custom.css", EpubResourceType.CSS, new FileStream("custom.css",
 // Export the result
 using (FileStream fs = new FileStream("sample.epub", FileMode.Create))
 {
-	doc.Export(fs);
+    doc.Export(fs);
 }
 ```
 
