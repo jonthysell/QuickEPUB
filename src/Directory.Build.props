@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Product>QuickEPUB</Product>
     <Company>Jon Thysell</Company>
-    <Authors>Jon Thysell</Authors>
+    <Authors>JonThysell</Authors>
     <Copyright>Copyright © 2016-2022 Jon Thysell</Copyright>
     <Description>An open-source .NET library for generating simple eBooks in the EPUB format.</Description>
     <RepositoryUrl>https://github.com/jonthysell/QuickEPUB.git</RepositoryUrl>
