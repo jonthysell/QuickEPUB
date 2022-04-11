@@ -1,0 +1,38 @@
+name: CI Build
+
+env:
+  BinDir: ./src/QuickEPUB/bin
+  SolutionFile: ./src/QuickEPUB.sln
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci_build:
+    name: CI Build and Test
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build Solution
+      run: dotnet build --configuration ${{ matrix.configuration }} ${{ env.SolutionFile }}
+
+    - name: Test Solution
+      run: dotnet test --configuration ${{ matrix.configuration }} --no-build ${{ env.SolutionFile }}
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.configuration }}Binaries
+        path: ${{ env.BinDir }}/${{ matrix.configuration }}/
