@@ -1,8 +1,8 @@
 # QuickEPUB #
 
-QuickEPUB is an open-source .NET Standard library for generating simple ebooks in the EPUB format.
+QuickEPUB is an open-source .NET library for generating simple eBooks in the EPUB format.
 
-EPUB is a very powerful and flexible format for publishing e-books. Most open-source libraries for creating EPUBs are just as powerful and flexible, but often require you to really understand how EPUBs work in order to use them effectively.
+EPUB is a very powerful and flexible format for publishing eBooks. Most open-source libraries for creating EPUBs are just as powerful and flexible, but often require you to really understand how EPUBs work in order to use them effectively.
 
 QuickEPUB is for developers that want a quick and easy way to take HTML content and export simple EPUB files from their apps.
 
