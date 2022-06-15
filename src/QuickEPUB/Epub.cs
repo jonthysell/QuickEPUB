@@ -251,7 +251,10 @@ namespace QuickEPUB
                 for (int i = 0; i < _resources.Count; i++)
                 {
                     ZipArchiveEntry resourceEntry = archive.CreateEntry(string.Format("OEBPS/{0}", _resources[i].Path), CompressionLevel.Optimal);
-                    _resources[i].ResourceStream.CopyTo(resourceEntry.Open());
+                    using (BinaryWriter bw = new BinaryWriter(resourceEntry.Open()))
+                    {
+                        bw.Write(_resources[i].ResourceData, 0, _resources[i].ResourceData.Length);
+                    }
                 }
             }
         }

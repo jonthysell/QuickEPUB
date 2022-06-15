@@ -37,20 +37,20 @@ namespace QuickEPUB
         public EpubResourceType ResourceType { get; private set; }
 
         /// <summary>
-        /// The input stream of this <see cref="EpubResource"/> file.
+        /// The data of this <see cref="EpubResource"/> file.
         /// </summary>
-        public Stream ResourceStream
+        public byte[] ResourceData
         {
             get
             {
-                return _resourceStream;
+                return _resourceData;
             }
             private set
             {
-                _resourceStream = value ?? throw new ArgumentNullException();
+                _resourceData = value ?? throw new ArgumentNullException();
             }
         }
-        private Stream _resourceStream;
+        private byte[] _resourceData;
 
         /// <summary>
         /// The MIME type of this <see cref="EpubResource"/> file.
@@ -73,7 +73,15 @@ namespace QuickEPUB
         {
             Path = path;
             ResourceType = resourceType;
-            ResourceStream = resourceStream;
+
+            using (resourceStream)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    resourceStream.CopyTo(ms);
+                    ResourceData = ms.ToArray();
+                }
+            }
         }
 
         private static readonly string[] MediaTypeMapping = new string[]
