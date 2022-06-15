@@ -5,8 +5,14 @@ using System;
 
 namespace QuickEPUB
 {
+    /// <summary>
+    /// A section of HTML content within an EPUB.
+    /// </summary>
     public class EpubSection
     {
+        /// <summary>
+        /// The title of this <see cref="EpubSection"/>.
+        /// </summary>
         public string Title
         {
             get
@@ -24,6 +30,9 @@ namespace QuickEPUB
         }
         private string _title;
 
+        /// <summary>
+        /// The HTML content of this <see cref="EpubSection"/>, to be placed within the &lt;body&gt; tag.
+        /// </summary>
         public string BodyHtml
         {
             get
@@ -41,6 +50,9 @@ namespace QuickEPUB
         }
         private string _body;
 
+        /// <summary>
+        /// Gets a value that indicates whether or not this <see cref="EpubSection"/> has a CSS file.
+        /// </summary>
         public bool HasCss
         {
             get
@@ -49,6 +61,9 @@ namespace QuickEPUB
             }
         }
 
+        /// <summary>
+        /// The relative path to the CSS file (if any) for this <see cref="EpubSection"/>.
+        /// </summary>
         public string CssPath
         {
             get
@@ -62,6 +77,12 @@ namespace QuickEPUB
         }
         private string _cssPath = "";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EpubSection"/> class.
+        /// </summary>
+        /// <param name="title">The title of this <see cref="EpubSection"/>.</param>
+        /// <param name="bodyHtml">The HTML content of this <see cref="EpubSection"/>, to be placed within the &lt;body&gt; tag.</param>
+        /// <param name="cssPath">The relative path to the CSS file (if any) for this <see cref="EpubSection"/>.</param>
         public EpubSection(string title, string bodyHtml, string cssPath = "")
         {
             Title = title;

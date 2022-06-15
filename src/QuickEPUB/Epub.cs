@@ -11,8 +11,14 @@ using System.Text;
 
 namespace QuickEPUB
 {
+    /// <summary>
+    /// An EPUB document.
+    /// </summary>
     public class Epub
     {
+        /// <summary>
+        /// The title of this <see cref="Epub"/> document.
+        /// </summary>
         public string Title
         {
             get
@@ -30,6 +36,9 @@ namespace QuickEPUB
         }
         private string _title;
 
+        /// <summary>
+        /// The author of this <see cref="Epub"/> document.
+        /// </summary>
         public string Author
         {
             get
@@ -47,10 +56,19 @@ namespace QuickEPUB
         }
         private string _author;
 
+        /// <summary>
+        /// The ISO 2-letter language code specifiying the language of the content in this <see cref="Epub"/> document.
+        /// </summary>
         public string Language { get; set; }
 
+        /// <summary>
+        /// The unique identifier (URL, ISBN, etc.) of this <see cref="Epub"/> document.
+        /// </summary>
         public string UID { get; set; }
 
+        /// <summary>
+        /// The <see cref="EpubSection"/>s in this <see cref="Epub"/> document.
+        /// </summary>
         public IEnumerable<EpubSection> Sections
         {
             get
@@ -60,6 +78,9 @@ namespace QuickEPUB
         }
         private readonly List<EpubSection> _sections = new List<EpubSection>();
 
+        /// <summary>
+        /// The <see cref="EpubResource"/>s in this <see cref="Epub"/> document.
+        /// </summary>
         public IEnumerable<EpubResource> Resources
         {
             get
@@ -69,24 +90,46 @@ namespace QuickEPUB
         }
         private readonly List<EpubResource> _resources = new List<EpubResource>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Epub"/> class.
+        /// </summary>
+        /// <param name="title">The title of this <see cref="Epub"/> document.</param>
+        /// <param name="author">The author of this <see cref="Epub"/> document.</param>
         public Epub(string title, string author)
         {
             Title = title;
             Author = author;
         }
 
-        public void AddSection(string title, string body, string cssPath = "")
+        /// <summary>
+        /// Creates and adds a new <see cref="EpubSection"/> to this <see cref="Epub"/> document.
+        /// </summary>
+        /// <param name="title">The title of the new <see cref="EpubSection"/>.</param>
+        /// <param name="bodyHtml">The HTML content of the new <see cref="EpubSection"/>, to be placed within the &lt;body&gt; tag.</param>
+        /// <param name="cssPath">The relative path to the CSS file (if any) for the new <see cref="EpubSection"/>.</param>
+        public void AddSection(string title, string bodyHtml, string cssPath = "")
         {
-            EpubSection section = new EpubSection(title, body, cssPath);
+            EpubSection section = new EpubSection(title, bodyHtml, cssPath);
             _sections.Add(section);
         }
 
+        /// <summary>
+        /// Creates and adds a new <see cref="EpubResource"/> to this <see cref="Epub"/> document.
+        /// </summary>
+        /// <param name="path">The relative output path to store the new <see cref="EpubResource"/> file within the EPUB.</param>
+        /// <param name="resourceType">The type of the new <see cref="EpubResource"/> file.</param>
+        /// <param name="resourceStream">The input stream of the new <see cref="EpubResource"/> file.</param>
         public void AddResource(string path, EpubResourceType resourceType, Stream resourceStream)
         {
             EpubResource resource = new EpubResource(path, resourceType, resourceStream);
             _resources.Add(resource);
         }
 
+        /// <summary>
+        /// Exports this <see cref="Epub"/> document as an EPUB file to the given output stream.
+        /// </summary>
+        /// <param name="outputStream">The output stream to export to.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the output stream is null.</exception>
         public void Export(Stream outputStream)
         {
             if (outputStream is null)
