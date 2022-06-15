@@ -41,13 +41,19 @@ doc.AddSection("Chapter 1", "<p>Lorem ipsum dolor sit amet...</p>");
 doc.AddSection("Chapter 2", "<p><img src=\"image.jpg\" alt=\"Image\"/></p>");
 
 // Adding images that are referenced in any of the sections
-doc.AddResource("image.jpg", EpubResourceType.JPEG, new FileStream("image.jpg", FileMode.Open));
+using (FileStream jpgStream = new FileStream("image.jpg", FileMode.Open))
+{
+    doc.AddResource("image.jpg", EpubResourceType.JPEG, jpgStream);
+}
 
 // Adding sections of HTML content (that use a custom CSS stylesheet)
 doc.AddSection("Chapter 3", "<p class="body-text">Lorem ipsum dolor sit amet...</p>", "custom.css");
 
-// Add any resources referenced in the HTML content
-doc.AddResource("custom.css", EpubResourceType.CSS, new FileStream("custom.css", FileMode.Open));
+// Add the CSS file referenced in the HTML content
+using (FileStream cssStream = new FileStream("custom.css", FileMode.Open))
+{
+    doc.AddResource("custom.css", EpubResourceType.CSS, cssStream);
+}
 
 // Export the result
 using (FileStream fs = new FileStream("sample.epub", FileMode.Create))
@@ -75,6 +81,14 @@ Then you should be able to run the following command to build QuickEPUB from wit
 
 ```cmd
 dotnet build ./src/QuickEPUB.sln
+```
+
+## Test ##
+
+With the above setup, you should be able to run the following command to test QuickEPUB from within its source folder:
+
+```cmd
+dotnet test ./src/QuickEPUB.sln
 ```
 
 ## Errata ##

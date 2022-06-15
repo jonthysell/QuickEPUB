@@ -179,7 +179,7 @@ namespace QuickEPUB
                         string resourceId = string.Format("resource{0}", i + 1);
                         itemSB.AppendLine(string.Format(ContentOpfItemTemplate
                             , resourceId
-                            , _resources[i].Path
+                            , _resources[i].OutputPath
                             , _resources[i].MediaType));
                     }
 
@@ -250,7 +250,7 @@ namespace QuickEPUB
                 // Add Resources
                 for (int i = 0; i < _resources.Count; i++)
                 {
-                    ZipArchiveEntry resourceEntry = archive.CreateEntry(string.Format("OEBPS/{0}", _resources[i].Path), CompressionLevel.Optimal);
+                    ZipArchiveEntry resourceEntry = archive.CreateEntry(string.Format("OEBPS/{0}", _resources[i].OutputPath), CompressionLevel.Optimal);
                     using (BinaryWriter bw = new BinaryWriter(resourceEntry.Open()))
                     {
                         bw.Write(_resources[i].ResourceData, 0, _resources[i].ResourceData.Length);

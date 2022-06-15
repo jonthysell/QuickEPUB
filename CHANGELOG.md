@@ -3,7 +3,8 @@
 ## next ##
 
 * Added documentation for IntelliSense
-* Fixed bug with resource files being kept open until export
+* Added more unit tests
+* Resource files are now loaded into memory so the input stream can be closed
 
 ## v0.9.0 ##
 

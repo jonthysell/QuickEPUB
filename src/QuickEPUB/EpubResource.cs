@@ -14,11 +14,11 @@ namespace QuickEPUB
         /// <summary>
         /// The relative output path to store this <see cref="EpubResource"/> file within the EPUB.
         /// </summary>
-        public string Path
+        public string OutputPath
         {
             get
             {
-                return _path;
+                return _outputPath;
             }
             private set
             {
@@ -26,10 +26,10 @@ namespace QuickEPUB
                 {
                     throw new ArgumentNullException();
                 }
-                _path = value;
+                _outputPath = value;
             }
         }
-        private string _path;
+        private string _outputPath;
 
         /// <summary>
         /// The type of this <see cref="EpubResource"/> file.
@@ -50,7 +50,7 @@ namespace QuickEPUB
                 _resourceData = value ?? throw new ArgumentNullException();
             }
         }
-        private byte[] _resourceData;
+        private byte[] _resourceData = null;
 
         /// <summary>
         /// The MIME type of this <see cref="EpubResource"/> file.
@@ -66,21 +66,24 @@ namespace QuickEPUB
         /// <summary>
         /// Initializes a new instance of the <see cref="EpubResource"/> class.
         /// </summary>
-        /// <param name="path">The relative output path to store this <see cref="EpubResource"/> file within the EPUB.</param>
+        /// <param name="outputPath">The relative output path to store this <see cref="EpubResource"/> file within the EPUB.</param>
         /// <param name="resourceType">The type of this <see cref="EpubResource"/> file.</param>
-        /// <param name="resourceStream">The input stream of this <see cref="EpubResource"/> file.</param>
-        public EpubResource(string path, EpubResourceType resourceType, Stream resourceStream)
+        /// <param name="inputStream">The input stream of this <see cref="EpubResource"/> file.</param>
+        /// <exception cref="ArgumentNullException">Thrown when the input stream is null.</exception>
+        public EpubResource(string outputPath, EpubResourceType resourceType, Stream inputStream)
         {
-            Path = path;
+            OutputPath = outputPath;
             ResourceType = resourceType;
 
-            using (resourceStream)
+            if (inputStream is null)
             {
-                using (var ms = new MemoryStream())
-                {
-                    resourceStream.CopyTo(ms);
-                    ResourceData = ms.ToArray();
-                }
+                throw new ArgumentNullException(nameof(inputStream));
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                inputStream.CopyTo(ms);
+                ResourceData = ms.ToArray();
             }
         }
 
