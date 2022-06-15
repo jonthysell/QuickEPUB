@@ -1,4 +1,4 @@
-# QuickEPUB ChangeLog #
+# QuickEPUB Changelog #
 
 ## v0.9.0 ##
 
