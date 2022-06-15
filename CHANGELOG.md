@@ -1,6 +1,6 @@
 # QuickEPUB Changelog #
 
-## next ##
+## v1.0.0 ##
 
 * Added documentation for IntelliSense
 * Added more unit tests
