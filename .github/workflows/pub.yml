@@ -63,8 +63,11 @@ jobs:
         $NugetPackagePath = Get-ChildItem -Recurse ${{ env.BinDir }}/*.nupkg
         echo "NUGET_PACKAGE_PATH=$NugetPackagePath" >> $env:GITHUB_ENV
         echo "NUGET_PACKAGE_NAME=$(Split-Path -Leaf $NugetPackagePath)" >> $env:GITHUB_ENV
+        $SnugetPackagePath = Get-ChildItem -Recurse ${{ env.BinDir }}/*.snupkg
+        echo "SNUGET_PACKAGE_PATH=$SnugetPackagePath" >> $env:GITHUB_ENV
+        echo "SNUGET_PACKAGE_NAME=$(Split-Path -Leaf $SnugetPackagePath)" >> $env:GITHUB_ENV
 
-    - name: Upload Release Asset
+    - name: Upload NUPKG Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,6 +75,16 @@ jobs:
         upload_url: ${{ needs.pub_create_github_release.outputs.upload_url }}
         asset_path: ${{ env.NUGET_PACKAGE_PATH }}
         asset_name: ${{ env.NUGET_PACKAGE_NAME }}
+        asset_content_type: application/zip
+
+    - name: Upload SNUPKG Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.pub_create_github_release.outputs.upload_url }}
+        asset_path: ${{ env.SNUGET_PACKAGE_PATH }}
+        asset_name: ${{ env.SNUGET_PACKAGE_NAME }}
         asset_content_type: application/zip
     
     - name: Publish NuGet
