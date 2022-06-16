@@ -12,8 +12,8 @@ function Bump-Version {
         [string]$BumpPart
     )
 
-    $Version -Match "^(\d+)\.(\d+)\.(\d+)(.*)$" | Out-Null
-    $major, $minor, $patch, $rest = [int]$matches[1], [int]$matches[2], [int]$matches[3], $matches[4]
+    $Version -Match "^(\d+)\.(\d+)\.(\d+)" | Out-Null
+    $major, $minor, $patch = [int]$matches[1], [int]$matches[2], [int]$matches[3]
 
     switch ($BumpPart) {
         "major" { $major += 1; $minor = 0; $patch = 0 } 
