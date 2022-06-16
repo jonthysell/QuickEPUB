@@ -1,6 +1,6 @@
 # QuickEPUB Changelog #
 
-## next ##
+## v1.0.1 ##
 
 * Added SourceLink support for NuGet package
 

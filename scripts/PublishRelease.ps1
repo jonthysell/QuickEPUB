@@ -21,7 +21,7 @@ function Bump-Version {
         "patch" { $patch += 1 }
     }
 
-    return "$major.$minor.$patch$rest"
+    return "$major.$minor.$patch"
 }
 
 [string] $RepoRoot = Resolve-Path "$PSScriptRoot\.."
