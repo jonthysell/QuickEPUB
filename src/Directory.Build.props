@@ -6,7 +6,7 @@
     <Authors>JonThysell</Authors>
     <Copyright>Copyright © 2016-2022 Jon Thysell</Copyright>
     <Description>An open-source .NET library for generating simple eBooks in the EPUB format.</Description>
-    <RepositoryUrl>https://github.com/jonthysell/QuickEPUB.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/jonthysell/QuickEPUB</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/jonthysell/QuickEPUB</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -16,8 +16,11 @@
     <AssemblyVersion>$(Version).0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <DebugType>embedded</DebugType>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup> 
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\README.md">

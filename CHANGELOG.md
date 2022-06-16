@@ -1,5 +1,9 @@
 # QuickEPUB Changelog #
 
+## next ##
+
+* Added SourceLink support for NuGet package
+
 ## v1.0.0 ##
 
 * Added documentation for IntelliSense
