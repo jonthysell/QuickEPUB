@@ -1,5 +1,10 @@
 # QuickEPUB Changelog #
 
+
+## next ##
+
+* Added support for TTF/OTF font resources
+
 ## v1.0.1 ##
 
 * Added SourceLink support for NuGet package

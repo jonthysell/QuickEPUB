@@ -94,6 +94,8 @@ namespace QuickEPUB
             "image/gif",
             "image/png",
             "image/svg+xml",
+            "font/ttf",
+            "font/otf",
         };
     }
 
@@ -121,6 +123,14 @@ namespace QuickEPUB
         /// <summary>
         /// A SVG image file.
         /// </summary>
-        SVG
+        SVG,
+        /// <summary>
+        /// A TTF font file.
+        /// </summary>
+        TTF,
+        /// <summary>
+        /// An OTF font file.
+        /// </summary>
+        OTF,
     }
 }

@@ -118,6 +118,25 @@ namespace QuickEPUB.Test
         }
 
         [TestMethod]
+        public void Epub_AddFontResourceTest()
+        {
+            Epub doc = new Epub("Test Title", "Test Author");
+            Assert.IsNotNull(doc.Resources);
+            Assert.AreEqual(0, doc.Resources.Count());
+
+            using FileStream fs = new FileStream("TestAssets\\test.ttf", FileMode.Open);
+
+            doc.AddResource("test.ttf", EpubResourceType.TTF, fs);
+            Assert.AreEqual(1, doc.Resources.Count());
+
+            var resource = doc.Resources.First();
+            Assert.AreEqual("test.ttf", resource.OutputPath);
+            Assert.AreEqual(EpubResourceType.TTF, resource.ResourceType);
+            Assert.IsNotNull(resource.ResourceData);
+            Assert.IsTrue(resource.ResourceData.Length > 0);
+        }
+
+        [TestMethod]
         public void Epub_ExportEpubTest()
         {
             Epub doc = new Epub("Test Title", "Test Author");
@@ -151,6 +170,22 @@ namespace QuickEPUB.Test
             doc.AddResource("test.png", EpubResourceType.PNG, pngStream);
 
             using FileStream fs = new FileStream("Epub_ExportEpubWithImageResourceTest.epub", FileMode.Create);
+            doc.Export(fs);
+        }
+
+        [TestMethod]
+        public void Epub_ExportEpubWithFontResourceTest()
+        {
+            Epub doc = new Epub("Test Title", "Test Author");
+            doc.AddSection("Section 1", "<p style=\"font-family: Test;\">This is section 1.</p>", "test.css");
+
+            using FileStream cssStream = new FileStream("TestAssets\\test.css", FileMode.Open);
+            doc.AddResource("test.css", EpubResourceType.CSS, cssStream);
+
+            using FileStream ttfStream = new FileStream("TestAssets\\test.ttf", FileMode.Open);
+            doc.AddResource("test.ttf", EpubResourceType.TTF, ttfStream);
+
+            using FileStream fs = new FileStream("Epub_ExportEpubWithFontResourceTest.epub", FileMode.Create);
             doc.Export(fs);
         }
     }

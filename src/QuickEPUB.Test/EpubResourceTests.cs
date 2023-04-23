@@ -40,6 +40,20 @@ namespace QuickEPUB.Test
         }
 
         [TestMethod]
+        public void EpubResource_NewFontTest()
+        {
+            using FileStream fs = new FileStream("TestAssets\\test.ttf", FileMode.Open);
+
+            EpubResource resource = new EpubResource("test.ttf", EpubResourceType.TTF, fs);
+
+            Assert.AreEqual("test.ttf", resource.OutputPath);
+            Assert.AreEqual(EpubResourceType.TTF, resource.ResourceType);
+            Assert.AreEqual("font/ttf", resource.MediaType);
+            Assert.IsNotNull(resource.ResourceData);
+            Assert.IsTrue(resource.ResourceData.Length > 0);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void EpubResource_NewNullOutputPathTest()
         {
