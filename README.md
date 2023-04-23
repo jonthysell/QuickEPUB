@@ -47,7 +47,7 @@ using (FileStream jpgStream = new FileStream("image.jpg", FileMode.Open))
 }
 
 // Adding sections of HTML content (that use a custom CSS stylesheet)
-doc.AddSection("Chapter 3", "<p class="body-text">Lorem ipsum dolor sit amet...</p>", "custom.css");
+doc.AddSection("Chapter 3", "<p class=\"body-text\">Lorem ipsum dolor sit amet...</p>", "custom.css");
 
 // Add the CSS file referenced in the HTML content
 using (FileStream cssStream = new FileStream("custom.css", FileMode.Open))
@@ -62,7 +62,7 @@ using (FileStream fs = new FileStream("sample.epub", FileMode.Create))
 }
 ```
 
-This sample code will create an EPUB named "sample.epub" with three sections in its table of contents:
+This sample code will create an EPUB named `sample.epub` with three sections in its table of contents:
 
 1. Chapter 1
 2. Chapter 2
