@@ -1,7 +1,7 @@
 # QuickEPUB Changelog #
 
 
-## v1.1.0 ##
+## next ##
 
 * Added support for TTF/OTF font resources
 
