@@ -119,9 +119,10 @@ namespace QuickEPUB
         /// <param name="path">The relative output path to store the new <see cref="EpubResource"/> file within the EPUB.</param>
         /// <param name="resourceType">The type of the new <see cref="EpubResource"/> file.</param>
         /// <param name="resourceStream">The input stream of the new <see cref="EpubResource"/> file.</param>
-        public void AddResource(string path, EpubResourceType resourceType, Stream resourceStream)
+        /// <param name="isCover">The flag indicating whether to mark the new <see cref="EpubResource"/> file as a cover.</param>
+        public void AddResource(string path, EpubResourceType resourceType, Stream resourceStream, bool isCover = false)
         {
-            EpubResource resource = new EpubResource(path, resourceType, resourceStream);
+            EpubResource resource = new EpubResource(path, resourceType, resourceStream, isCover);
             _resources.Add(resource);
         }
 
@@ -177,7 +178,8 @@ namespace QuickEPUB
                     for (int i = 0; i < _resources.Count; i++)
                     {
                         string resourceId = string.Format("resource{0}", i + 1);
-                        itemSB.AppendLine(string.Format(ContentOpfItemTemplate
+                        itemSB.AppendLine(string.Format(
+                            _resources[i].IsCover ? ContentOpfCoverItemTemplate : ContentOpfItemTemplate
                             , resourceId
                             , _resources[i].OutputPath
                             , _resources[i].MediaType));
@@ -287,6 +289,7 @@ namespace QuickEPUB
 ";
 
         private const string ContentOpfItemTemplate = @"<item id=""{0}"" href=""{1}"" media-type=""{2}""/>";
+        private const string ContentOpfCoverItemTemplate = @"<item id=""{0}"" href=""{1}"" media-type=""{2}"" properties=""cover-image"" />";
         private const string ContentOpfSpineItemRefTemplate = @"<itemref idref=""{0}""/>";
 
         private const string TocNcxTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
