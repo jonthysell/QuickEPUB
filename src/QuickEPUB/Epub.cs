@@ -21,16 +21,11 @@ namespace QuickEPUB
         /// </summary>
         public string Title
         {
-            get
-            {
-                return _title;
-            }
+            get => _title;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                {
                     throw new ArgumentNullException();
-                }
                 _title = value;
             }
         }
@@ -41,23 +36,18 @@ namespace QuickEPUB
         /// </summary>
         public string Author
         {
-            get
-            {
-                return _author;
-            }
+            get => _author;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                {
                     throw new ArgumentNullException();
-                }
                 _author = value;
             }
         }
         private string _author;
 
         /// <summary>
-        /// The ISO 2-letter language code specifiying the language of the content in this <see cref="Epub"/> document.
+        /// The ISO 2-letter language code specifying the language of the content in this <see cref="Epub"/> document.
         /// </summary>
         public string Language { get; set; }
 
@@ -69,26 +59,14 @@ namespace QuickEPUB
         /// <summary>
         /// The <see cref="EpubSection"/>s in this <see cref="Epub"/> document.
         /// </summary>
-        public IEnumerable<EpubSection> Sections
-        {
-            get
-            {
-                return _sections.AsEnumerable();
-            }
-        }
-        private readonly List<EpubSection> _sections = new List<EpubSection>();
+        public IEnumerable<EpubSection> Sections => _sections.AsEnumerable();
+        private readonly List<EpubSection> _sections = new();
 
         /// <summary>
         /// The <see cref="EpubResource"/>s in this <see cref="Epub"/> document.
         /// </summary>
-        public IEnumerable<EpubResource> Resources
-        {
-            get
-            {
-                return _resources.AsEnumerable();
-            }
-        }
-        private readonly List<EpubResource> _resources = new List<EpubResource>();
+        public IEnumerable<EpubResource> Resources =>_resources.AsEnumerable();
+        private readonly List<EpubResource> _resources = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Epub"/> class.
@@ -109,7 +87,7 @@ namespace QuickEPUB
         /// <param name="cssPath">The relative path to the CSS file (if any) for the new <see cref="EpubSection"/>.</param>
         public void AddSection(string title, string bodyHtml, string cssPath = "")
         {
-            EpubSection section = new EpubSection(title, bodyHtml, cssPath);
+            var section = new EpubSection(title, bodyHtml, cssPath);
             _sections.Add(section);
         }
 
@@ -122,7 +100,7 @@ namespace QuickEPUB
         /// <param name="isCover">The flag indicating whether to mark the new <see cref="EpubResource"/> file as a cover.</param>
         public void AddResource(string path, EpubResourceType resourceType, Stream resourceStream, bool isCover = false)
         {
-            EpubResource resource = new EpubResource(path, resourceType, resourceStream, isCover);
+            var resource = new EpubResource(path, resourceType, resourceStream, isCover);
             _resources.Add(resource);
         }
 
@@ -134,213 +112,223 @@ namespace QuickEPUB
         public void Export(Stream outputStream)
         {
             if (outputStream is null)
-            {
                 throw new ArgumentNullException(nameof(outputStream));
-            }
 
             string lang = string.IsNullOrWhiteSpace(Language) ? CultureInfo.CurrentCulture.Name : Language;
             string uid = string.IsNullOrWhiteSpace(UID) ? Guid.NewGuid().ToString() : UID;
 
-            using (ZipArchive archive = new ZipArchive(outputStream, ZipArchiveMode.Create))
+            using var archive = new ZipArchive(outputStream, ZipArchiveMode.Create);
+
+            // Add mimetype
+            ZipArchiveEntry mimetype = archive.CreateEntry("mimetype", CompressionLevel.NoCompression);
+            using (var streamWriter = new StreamWriter(mimetype.Open()))
             {
-                // Add mimetype
-                ZipArchiveEntry mimetype = archive.CreateEntry("mimetype", CompressionLevel.NoCompression);
-                using (StreamWriter sw = new StreamWriter(mimetype.Open()))
-                {
-                    sw.Write(@"application/epub+zip");
-                }
+                streamWriter.Write(@"application/epub+zip");
+            }
 
-                // Add container.xml
-                ZipArchiveEntry containerXml = archive.CreateEntry("META-INF/container.xml", CompressionLevel.Optimal);
-                using (StreamWriter sw = new StreamWriter(containerXml.Open()))
-                {
-                    sw.Write(ContainerXmlTemplate);
-                }
+            // Add container.xml
+            ZipArchiveEntry containerXml = archive.CreateEntry("META-INF/container.xml", CompressionLevel.Optimal);
+            using (var streamWriter = new StreamWriter(containerXml.Open()))
+            {
+                streamWriter.Write(ContainerXmlTemplate);
+            }
 
-                // Add content.opf
-                ZipArchiveEntry contentOpf = archive.CreateEntry("OEBPS/content.opf", CompressionLevel.Optimal);
-                using (StreamWriter sw = new StreamWriter(contentOpf.Open()))
-                {
-                    StringBuilder itemSB = new StringBuilder();
-                    StringBuilder spineSB = new StringBuilder();
+            // Add content.opf
+            ZipArchiveEntry contentOpf = archive.CreateEntry("OEBPS/content.opf", CompressionLevel.Optimal);
+            using (var streamWriter = new StreamWriter(contentOpf.Open()))
+            {
+                var itemStringBuilder = new StringBuilder();
+                var spineStringBuilder = new StringBuilder();
 
-                    for (int i = 0; i < _sections.Count; i++)
-                    {
-                        string sectionId = string.Format("section{0}", i + 1);
-                        itemSB.AppendLine(string.Format(ContentOpfItemTemplate
-                            , sectionId
-                            , sectionId + ".html"
-                            , "application/xhtml+xml"));
-
-                        spineSB.AppendLine(string.Format(ContentOpfSpineItemRefTemplate, sectionId));
-                    }
-
-                    for (int i = 0; i < _resources.Count; i++)
-                    {
-                        string resourceId = string.Format("resource{0}", i + 1);
-                        itemSB.AppendLine(string.Format(
-                            _resources[i].IsCover ? ContentOpfCoverItemTemplate : ContentOpfItemTemplate
-                            , resourceId
-                            , _resources[i].OutputPath
-                            , _resources[i].MediaType));
-                    }
-
-                    string content = string.Format(ContentOpfTemplate
-                        , Title
-                        , Author
-                        , uid
-                        , lang
-                        , itemSB.ToString()
-                        , spineSB.ToString());
-
-                    sw.Write(content);
-                }
-
-                // Add toc.ncx
-                ZipArchiveEntry tocNcx = archive.CreateEntry("OEBPS/toc.ncx", CompressionLevel.Optimal);
-                using (StreamWriter sw = new StreamWriter(tocNcx.Open()))
-                {
-                    StringBuilder navLabelSB = new StringBuilder();
-
-                    for (int i = 0; i < _sections.Count; i++)
-                    {
-                        EpubSection section = _sections[i];
-
-                        string sectionId = string.Format("section{0}", i + 1);
-                        navLabelSB.AppendLine(string.Format(TocNcxNavPointTemplate
-                            , sectionId
-                            , (i + 1).ToString()
-                            , section.Title));
-                    }
-
-                    string content = string.Format(TocNcxTemplate
-                        , uid
-                        , Title
-                        , navLabelSB.ToString());
-
-                    sw.Write(content);
-                }
-
-                // Add Sections
                 for (int i = 0; i < _sections.Count; i++)
                 {
                     string sectionId = string.Format("section{0}", i + 1);
+                    itemStringBuilder.AppendLine(string.Format(
+                        ContentOpfItemTemplate,
+                        sectionId,
+                        $"{sectionId}.html",
+                        "application/xhtml+xml"));
 
-                    ZipArchiveEntry sectionHtml = archive.CreateEntry(string.Format("OEBPS/{0}.html", sectionId), CompressionLevel.Optimal);
-                    using (StreamWriter sw = new StreamWriter(sectionHtml.Open()))
-                    {
-                        string content = "";
-
-                        if (_sections[i].HasCss)
-                        {
-                            content = string.Format(EpubSectionHtmlWithCSSTemplate
-                                , _sections[i].Title
-                                , _sections[i].CssPath
-                                , _sections[i].BodyHtml);
-                        }
-                        else
-                        {
-                            content = string.Format(EpubSectionHtmlTemplate
-                                , _sections[i].Title
-                                , _sections[i].BodyHtml);
-                        }
-
-                        sw.Write(content);
-                    }
+                    spineStringBuilder.AppendLine(string.Format(ContentOpfSpineItemRefTemplate, sectionId));
                 }
 
-                // Add Resources
                 for (int i = 0; i < _resources.Count; i++)
                 {
-                    ZipArchiveEntry resourceEntry = archive.CreateEntry(string.Format("OEBPS/{0}", _resources[i].OutputPath), CompressionLevel.Optimal);
-                    using (BinaryWriter bw = new BinaryWriter(resourceEntry.Open()))
-                    {
-                        bw.Write(_resources[i].ResourceData, 0, _resources[i].ResourceData.Length);
-                    }
+                    string resourceId = string.Format("resource{0}", i + 1);
+                    itemStringBuilder.AppendLine(string.Format(
+                        _resources[i].IsCover ? ContentOpfCoverItemTemplate : ContentOpfItemTemplate,
+                        resourceId,
+                        _resources[i].OutputPath,
+                        _resources[i].MediaType));
                 }
+
+                string content = string.Format(
+                    ContentOpfTemplate,
+                    Title,
+                    Author,
+                    uid,
+                    lang,
+                    itemStringBuilder.ToString(),
+                    spineStringBuilder.ToString());
+
+                streamWriter.Write(content);
+            }
+
+            // Add toc.ncx
+            ZipArchiveEntry tocNcx = archive.CreateEntry("OEBPS/toc.ncx", CompressionLevel.Optimal);
+            using (var streamWriter = new StreamWriter(tocNcx.Open()))
+            {
+                var navLabelStringBuilder = new StringBuilder();
+
+                for (int i = 0; i < _sections.Count; i++)
+                {
+                    EpubSection section = _sections[i];
+
+                    string sectionId = string.Format("section{0}", i + 1);
+                    navLabelStringBuilder.AppendLine(string.Format(
+                        TocNcxNavPointTemplate,
+                        sectionId,
+                        (i + 1).ToString(),
+                        section.Title));
+                }
+
+                string content = string.Format(
+                    TocNcxTemplate,
+                    uid,
+                    Title,
+                    navLabelStringBuilder.ToString());
+
+                streamWriter.Write(content);
+            }
+
+            // Add Sections
+            for (int i = 0; i < _sections.Count; i++)
+            {
+                string sectionId = string.Format("section{0}", i + 1);
+
+                ZipArchiveEntry sectionHtml = archive.CreateEntry(
+                    string.Format("OEBPS/{0}.html", sectionId),
+                    CompressionLevel.Optimal);
+
+                string content = _sections[i].HasCss
+                    ? string.Format(
+                        EpubSectionHtmlWithCSSTemplate,
+                        _sections[i].Title,
+                        _sections[i].CssPath,
+                        _sections[i].BodyHtml)
+                    : string.Format(
+                        EpubSectionHtmlTemplate,
+                        _sections[i].Title,
+                        _sections[i].BodyHtml);
+
+                using var streamWriter = new StreamWriter(sectionHtml.Open());
+                streamWriter.Write(content);
+            }
+
+            // Add Resources
+            for (int i = 0; i < _resources.Count; i++)
+            {
+                ZipArchiveEntry resourceEntry = archive.CreateEntry(
+                    string.Format("OEBPS/{0}", _resources[i].OutputPath),
+                    CompressionLevel.Optimal);
+                using var binaryWriter = new BinaryWriter(resourceEntry.Open());
+                binaryWriter.Write(_resources[i].ResourceData, 0, _resources[i].ResourceData.Length);
             }
         }
 
-        private const string ContainerXmlTemplate = @"<?xml version=""1.0""?>
-<container version=""1.0"" xmlns=""urn:oasis:names:tc:opendocument:xmlns:container"">
-  <rootfiles>
-    <rootfile full-path=""OEBPS/content.opf""
-     media-type=""application/oebps-package+xml"" />
-  </rootfiles>
-</container>
-";
+        private const string ContainerXmlTemplate =
+            """
+            <?xml version="1.0"?>
+            <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+              <rootfiles>
+                <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+              </rootfiles>
+            </container>
+            """;
 
-        private const string ContentOpfTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<package xmlns=""http://www.idpf.org/2007/opf"" xmlns:dc=""http://purl.org/dc/elements/1.1/"" unique-identifier=""bookid"" version=""2.0"">
-  <metadata>
-    <dc:title>{0}</dc:title>
-    <dc:creator>{1}</dc:creator>
-    <dc:identifier id=""bookid"">{2}</dc:identifier>
-    <dc:language>{3}</dc:language>
-  </metadata>
-  <manifest>
-    <item id=""ncx"" href=""toc.ncx"" media-type=""application/x-dtbncx+xml""/>
-    {4}
-  </manifest>
-  <spine toc=""ncx"">
-    {5}
-  </spine>
-</package>
-";
+        private const string ContentOpfTemplate =
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" unique-identifier="bookid" version="2.0">
+              <metadata>
+                <dc:title>{0}</dc:title>
+                <dc:creator>{1}</dc:creator>
+                <dc:identifier id="bookid">{2}</dc:identifier>
+                <dc:language>{3}</dc:language>
+              </metadata>
+              <manifest>
+                <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
+            {4}  </manifest>
+              <spine toc="ncx">
+            {5}  </spine>
+            </package>
+            """;
 
-        private const string ContentOpfItemTemplate = @"<item id=""{0}"" href=""{1}"" media-type=""{2}""/>";
-        private const string ContentOpfCoverItemTemplate = @"<item id=""{0}"" href=""{1}"" media-type=""{2}"" properties=""cover-image"" />";
-        private const string ContentOpfSpineItemRefTemplate = @"<itemref idref=""{0}""/>";
+        private const string ContentOpfItemTemplate =
+            """    <item id="{0}" href="{1}" media-type="{2}"/>""";
 
-        private const string TocNcxTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!DOCTYPE ncx PUBLIC ""-//NISO//DTD ncx 2005-1//EN"" ""http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"">
-<ncx xmlns=""http://www.daisy.org/z3986/2005/ncx/"" version=""2005-1"">
-  <head>
-    <meta name=""dtb:uid"" content=""{0}""/>
-    <meta name=""dtb:depth"" content=""1""/>
-    <meta name=""dtb:totalPageCount"" content=""0""/>
-    <meta name=""dtb:maxPageNumber"" content=""0""/>
-  </head>
-  <docTitle>
-    <text>{1}</text>
-  </docTitle>
-  <navMap>
-    {2}
-  </navMap>
-</ncx>
-";
+        private const string ContentOpfCoverItemTemplate =
+            """    <item id="{0}" href="{1}" media-type="{2}" properties="cover-image"/>""";
 
-        private const string TocNcxNavPointTemplate = @"    <navPoint id=""{0}"" playOrder=""{1}"">
-      <navLabel>
-        <text>{2}</text>
-      </navLabel>
-      <content src=""{0}.html""/>
-    </navPoint>
-";
+        private const string ContentOpfSpineItemRefTemplate =
+            """    <itemref idref="{0}"/>""";
 
-        private const string EpubSectionHtmlTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN"" ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
-<html xmlns=""http://www.w3.org/1999/xhtml"">
-<head>
-<title>{0}</title>
-</head>
-<body>
-{1}
-</body>
-</html>
-";
+        private const string TocNcxTemplate =
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">
+            <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+              <head>
+                <meta name="dtb:uid" content="{0}"/>
+                <meta name="dtb:depth" content="1"/>
+                <meta name="dtb:totalPageCount" content="0"/>
+                <meta name="dtb:maxPageNumber" content="0"/>
+              </head>
+              <docTitle>
+                <text>{1}</text>
+              </docTitle>
+              <navMap>
+            {2}  </navMap>
+            </ncx>
+            """;
 
-        private const string EpubSectionHtmlWithCSSTemplate = @"<?xml version=""1.0"" encoding=""utf-8""?>
-<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN"" ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
-<html xmlns=""http://www.w3.org/1999/xhtml"">
-<head>
-<title>{0}</title>
-<link type=""text/css"" rel=""stylesheet"" href=""{1}"" />
-</head>
-<body>
-{2}
-</body>
-</html>
-";
+        private const string TocNcxNavPointTemplate =
+            """
+                <navPoint id="{0}" playOrder="{1}">
+                  <navLabel>
+                    <text>{2}</text>
+                  </navLabel>
+                  <content src="{0}"/>
+                </navPoint>
+            """;
+
+        private const string EpubSectionHtmlTemplate =
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+            <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+              <title>{0}</title>
+            </head>
+            <body>
+            {1}
+            </body>
+            </html>
+            """;
+
+        private const string EpubSectionHtmlWithCSSTemplate =
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+            <html xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+              <title>{0}</title>
+              <link type="text/css" rel="stylesheet" href="{1}"/>
+            </head>
+            <body>
+            {2}
+            </body>
+            </html>
+            """;
     }
 }

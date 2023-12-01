@@ -16,16 +16,11 @@ namespace QuickEPUB
         /// </summary>
         public string OutputPath
         {
-            get
-            {
-                return _outputPath;
-            }
+            get => _outputPath;
             private set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                {
                     throw new ArgumentNullException();
-                }
                 _outputPath = value;
             }
         }
@@ -41,46 +36,27 @@ namespace QuickEPUB
         /// </summary>
         public byte[] ResourceData
         {
-            get
-            {
-                return _resourceData;
-            }
-            private set
-            {
-                _resourceData = value ?? throw new ArgumentNullException();
-            }
+            get => _resourceData;
+            private set => _resourceData = value ?? throw new ArgumentNullException();
         }
         private byte[] _resourceData = null;
 
         /// <summary>
         /// The MIME type of this <see cref="EpubResource"/> file.
         /// </summary>
-        public string MediaType
-        {
-            get
-            {
-                return MediaTypeMapping[(int)ResourceType];
-            }
-        }
+        public string MediaType => MediaTypeMapping[(int)ResourceType];
 
         /// <summary>
         /// The flag indicating whether to mark this <see cref="EpubResource"/> file as a cover.
         /// </summary>
         public bool IsCover
         {
-            get
-            {
-                return
-                    _isCover &&
-                    (ResourceType == EpubResourceType.JPEG ||
-                     ResourceType == EpubResourceType.GIF ||
-                     ResourceType == EpubResourceType.PNG ||
-                     ResourceType == EpubResourceType.SVG);
-            }
-            private set
-            {
-                _isCover = value;
-            }
+            get => _isCover &&
+                   (ResourceType == EpubResourceType.JPEG ||
+                    ResourceType == EpubResourceType.GIF ||
+                    ResourceType == EpubResourceType.PNG ||
+                    ResourceType == EpubResourceType.SVG);
+            private set => _isCover = value;
         }
         private bool _isCover = false;
 
@@ -98,20 +74,18 @@ namespace QuickEPUB
             ResourceType = resourceType;
 
             if (inputStream is null)
-            {
                 throw new ArgumentNullException(nameof(inputStream));
-            }
 
-            using (var ms = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
-                inputStream.CopyTo(ms);
-                ResourceData = ms.ToArray();
+                inputStream.CopyTo(memoryStream);
+                ResourceData = memoryStream.ToArray();
             }
 
             IsCover = isCover;
         }
 
-        private static readonly string[] MediaTypeMapping = new string[]
+        private static readonly string[] MediaTypeMapping = new[]
         {
             "text/css",
             "image/jpeg",
@@ -119,7 +93,7 @@ namespace QuickEPUB
             "image/png",
             "image/svg+xml",
             "font/ttf",
-            "font/otf",
+            "font/otf"
         };
     }
 
@@ -155,6 +129,6 @@ namespace QuickEPUB
         /// <summary>
         /// An OTF font file.
         /// </summary>
-        OTF,
+        OTF
     }
 }
