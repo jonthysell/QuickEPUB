@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace QuickEPUB.Test
@@ -14,9 +13,9 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void EpubResource_NewCSSTest()
         {
-            using FileStream fs = new FileStream("TestAssets\\test.css", FileMode.Open);
+            using var fs = new FileStream("TestAssets\\test.css", FileMode.Open);
 
-            EpubResource resource = new EpubResource("test.css", EpubResourceType.CSS, fs);
+            var resource = new EpubResource("test.css", EpubResourceType.CSS, fs);
 
             Assert.AreEqual("test.css", resource.OutputPath);
             Assert.AreEqual(EpubResourceType.CSS, resource.ResourceType);
@@ -28,9 +27,9 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void EpubResource_NewImageTest()
         {
-            using FileStream fs = new FileStream("TestAssets\\test.png", FileMode.Open);
+            using var fs = new FileStream("TestAssets\\test.png", FileMode.Open);
 
-            EpubResource resource = new EpubResource("test.png", EpubResourceType.PNG, fs);
+            var resource = new EpubResource("test.png", EpubResourceType.PNG, fs);
 
             Assert.AreEqual("test.png", resource.OutputPath);
             Assert.AreEqual(EpubResourceType.PNG, resource.ResourceType);
@@ -42,9 +41,9 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void EpubResource_NewFontTest()
         {
-            using FileStream fs = new FileStream("TestAssets\\test.ttf", FileMode.Open);
+            using var fs = new FileStream("TestAssets\\test.ttf", FileMode.Open);
 
-            EpubResource resource = new EpubResource("test.ttf", EpubResourceType.TTF, fs);
+            var resource = new EpubResource("test.ttf", EpubResourceType.TTF, fs);
 
             Assert.AreEqual("test.ttf", resource.OutputPath);
             Assert.AreEqual(EpubResourceType.TTF, resource.ResourceType);
@@ -57,7 +56,7 @@ namespace QuickEPUB.Test
         [ExpectedException(typeof(ArgumentNullException))]
         public void EpubResource_NewNullOutputPathTest()
         {
-            using FileStream fs = new FileStream("TestAssets\\test.css", FileMode.Open);
+            using var fs = new FileStream("TestAssets\\test.css", FileMode.Open);
             new EpubResource(null, EpubResourceType.CSS, fs);
         }
 
@@ -65,18 +64,16 @@ namespace QuickEPUB.Test
         [ExpectedException(typeof(ArgumentNullException))]
         public void EpubResource_NewEmptyOutputPathTest()
         {
-            using FileStream fs = new FileStream("TestAssets\\test.css", FileMode.Open);
-
-            new EpubResource("", EpubResourceType.CSS, fs);
+            using var fs = new FileStream("TestAssets\\test.css", FileMode.Open);
+            new EpubResource(string.Empty, EpubResourceType.CSS, fs);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void EpubResource_NewWhitespaceOutputPathTest()
         {
-            using FileStream fs = new FileStream("TestAssets\\test.css", FileMode.Open);
-
-            new EpubResource("", EpubResourceType.CSS, fs);
+            using var fs = new FileStream("TestAssets\\test.css", FileMode.Open);
+            new EpubResource(string.Empty, EpubResourceType.CSS, fs);
 
         }
 

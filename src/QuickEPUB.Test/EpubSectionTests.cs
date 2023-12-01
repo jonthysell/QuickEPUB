@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace QuickEPUB.Test
@@ -13,7 +12,7 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void EpubSection_NewTest()
         {
-            EpubSection section = new EpubSection("Test Title", "<p>Test Contents</p>");
+            var section = new EpubSection("Test Title", "<p>Test Contents</p>");
             Assert.AreEqual("Test Title", section.Title);
             Assert.AreEqual("<p>Test Contents</p>", section.BodyHtml);
             Assert.IsFalse(section.HasCss);
@@ -23,7 +22,7 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void EpubSection_NewWithCSSTest()
         {
-            EpubSection section = new EpubSection("Test Title", "<p>Test Contents</p>", "test.css");
+            var section = new EpubSection("Test Title", "<p>Test Contents</p>", "test.css");
             Assert.AreEqual("Test Title", section.Title);
             Assert.AreEqual("<p>Test Contents</p>", section.BodyHtml);
             Assert.IsTrue(section.HasCss);
