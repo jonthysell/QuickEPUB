@@ -173,6 +173,19 @@ namespace QuickEPUB.Test
         }
 
         [TestMethod]
+        public void Epub_ExportEpubWithCoverImageResourceTest()
+        {
+            var doc = new Epub("Test Title", "Test Author");
+            doc.AddSection("Section 1", "<p><img src=\"test.png\" alt=\"test\"/></p>");
+
+            using var pngStream = new FileStream("TestAssets\\test.png", FileMode.Open);
+            doc.AddResource("test.png", EpubResourceType.PNG, pngStream, true);
+
+            using var fs = new FileStream("Epub_ExportEpubWithCoverImageResourceTest.epub", FileMode.Create);
+            doc.Export(fs);
+        }
+
+        [TestMethod]
         public void Epub_ExportEpubWithFontResourceTest()
         {
             var doc = new Epub("Test Title", "Test Author");
