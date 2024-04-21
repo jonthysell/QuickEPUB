@@ -1,6 +1,6 @@
 # QuickEPUB Changelog #
 
-## v1.1.1 ##
+## next ##
 
 * Upgrade to generate valid EPUB 3 documents
 * Added specifying the cover image ( dmitry@barabash.com )
