@@ -134,7 +134,7 @@ namespace QuickEPUB
             }
 
             // Add content.opf
-            ZipArchiveEntry contentOpf = archive.CreateEntry("OEBPS/content.opf", CompressionLevel.Optimal);
+            ZipArchiveEntry contentOpf = archive.CreateEntry("EPUB/content.opf", CompressionLevel.Optimal);
             using (var streamWriter = new StreamWriter(contentOpf.Open()))
             {
                 var itemStringBuilder = new StringBuilder();
@@ -175,7 +175,7 @@ namespace QuickEPUB
             }
 
             // Add toc.ncx
-            ZipArchiveEntry tocNcx = archive.CreateEntry("OEBPS/toc.ncx", CompressionLevel.Optimal);
+            ZipArchiveEntry tocNcx = archive.CreateEntry("EPUB/toc.ncx", CompressionLevel.Optimal);
             using (var streamWriter = new StreamWriter(tocNcx.Open()))
             {
                 var navLabelStringBuilder = new StringBuilder();
@@ -207,7 +207,7 @@ namespace QuickEPUB
                 string sectionId = string.Format("section{0}", i + 1);
 
                 ZipArchiveEntry sectionHtml = archive.CreateEntry(
-                    string.Format("OEBPS/{0}.html", sectionId),
+                    string.Format("EPUB/{0}.html", sectionId),
                     CompressionLevel.Optimal);
 
                 string content = _sections[i].HasCss
@@ -229,7 +229,7 @@ namespace QuickEPUB
             for (int i = 0; i < _resources.Count; i++)
             {
                 ZipArchiveEntry resourceEntry = archive.CreateEntry(
-                    string.Format("OEBPS/{0}", _resources[i].OutputPath),
+                    string.Format("EPUB/{0}", _resources[i].OutputPath),
                     CompressionLevel.Optimal);
                 using var binaryWriter = new BinaryWriter(resourceEntry.Open());
                 binaryWriter.Write(_resources[i].ResourceData, 0, _resources[i].ResourceData.Length);
@@ -241,7 +241,7 @@ namespace QuickEPUB
             <?xml version="1.0"?>
             <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
               <rootfiles>
-                <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+                <rootfile full-path="EPUB/content.opf" media-type="application/oebps-package+xml"/>
               </rootfiles>
             </container>
             """;
@@ -249,7 +249,7 @@ namespace QuickEPUB
         private const string ContentOpfTemplate =
             """
             <?xml version="1.0" encoding="utf-8"?>
-            <package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" unique-identifier="bookid" version="2.0">
+            <package xmlns="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" unique-identifier="bookid" version="3.0">
               <metadata>
                 <dc:title>{0}</dc:title>
                 <dc:creator>{1}</dc:creator>
@@ -305,7 +305,7 @@ namespace QuickEPUB
         private const string EpubSectionHtmlTemplate =
             """
             <?xml version="1.0" encoding="utf-8"?>
-            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+            <!DOCTYPE html>
             <html xmlns="http://www.w3.org/1999/xhtml">
             <head>
               <title>{0}</title>
@@ -319,7 +319,7 @@ namespace QuickEPUB
         private const string EpubSectionHtmlWithCSSTemplate =
             """
             <?xml version="1.0" encoding="utf-8"?>
-            <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+            <!DOCTYPE html>
             <html xmlns="http://www.w3.org/1999/xhtml">
             <head>
               <title>{0}</title>
