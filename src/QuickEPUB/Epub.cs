@@ -57,6 +57,11 @@ namespace QuickEPUB
         public string UID { get; set; }
 
         /// <summary>
+        /// The title for the Table of Contents page for this <see cref="Epub"/> document.
+        /// </summary>
+        public string TableOfContentsTitle { get; set; } = "Table of Contents";
+
+        /// <summary>
         /// The <see cref="EpubSection"/>s in this <see cref="Epub"/> document.
         /// </summary>
         public IEnumerable<EpubSection> Sections => _sections.AsEnumerable();
@@ -202,6 +207,31 @@ namespace QuickEPUB
                 streamWriter.Write(content);
             }
 
+            // Add nav.html
+            ZipArchiveEntry navHtml = archive.CreateEntry("EPUB/nav.html", CompressionLevel.Optimal);
+            using (var streamWriter = new StreamWriter(navHtml.Open()))
+            {
+                var navListItemStringBuilder = new StringBuilder();
+
+                for (int i = 0; i < _sections.Count; i++)
+                {
+                    EpubSection section = _sections[i];
+
+                    string sectionId = string.Format("section{0}", i + 1);
+                    navListItemStringBuilder.AppendLine(string.Format(
+                        EpubNavHtmlItemTemplate,
+                        sectionId,
+                        section.Title));
+                }
+
+                string content = string.Format(
+                    EpubNavHtmlTemplate,
+                    TableOfContentsTitle,
+                    navListItemStringBuilder.ToString());
+
+                streamWriter.Write(content);
+            }
+
             // Add Sections
             for (int i = 0; i < _sections.Count; i++)
             {
@@ -259,6 +289,7 @@ namespace QuickEPUB
                 <meta property="dcterms:modified">{4}</meta>
               </metadata>
               <manifest>
+                <item id="nav" href="nav.html" media-type="application/xhtml+xml" properties="nav" />
                 <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
             {5}  </manifest>
               <spine toc="ncx">
@@ -303,6 +334,27 @@ namespace QuickEPUB
                   <content src="{0}.html"/>
                 </navPoint>
             """;
+
+        private const string EpubNavHtmlTemplate =
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <!DOCTYPE html>
+            <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+            <head>
+              <title>{0}</title>
+            </head>
+            <body>
+              <nav epub:type="toc">
+                <h1>{0}</h1>
+                <ol>
+                {1}    </ol>
+              </nav>
+            </body>
+            </html>
+            """;
+
+        private const string EpubNavHtmlItemTemplate =
+            """      <li><a href="{0}.html">{1}</a></li>""";
 
         private const string EpubSectionHtmlTemplate =
             """
