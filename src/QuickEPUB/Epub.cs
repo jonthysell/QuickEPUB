@@ -300,7 +300,7 @@ namespace QuickEPUB
                   <navLabel>
                     <text>{2}</text>
                   </navLabel>
-                  <content src="{0}"/>
+                  <content src="{0}.html"/>
                 </navPoint>
             """;
 
