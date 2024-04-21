@@ -95,4 +95,4 @@ dotnet test ./src/QuickEPUB.sln
 
 QuickEPUB is open-source under the MIT license.
 
-Copyright (c) 2016-2023 Jon Thysell.
+Copyright (c) 2016-2024 Jon Thysell.

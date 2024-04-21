@@ -1,5 +1,10 @@
 # QuickEPUB Changelog #
 
+## next ##
+
+* Upgrade to generate valid EPUB3 documents
+* Added specifying the cover image ( dmitry@barabash.com )
+* Upgrade build to .NET 8 ( dmitry@barabash.com )
 
 ## v1.1.0 ##
 
