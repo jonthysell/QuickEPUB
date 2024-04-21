@@ -4,7 +4,6 @@
 using System;
 using System.IO;
 using System.Linq;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace QuickEPUB.Test
@@ -15,7 +14,7 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void Epub_NewTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             Assert.AreEqual("Test Title", doc.Title);
             Assert.AreEqual("Test Author", doc.Author);
         }
@@ -65,7 +64,7 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void Epub_AddSectionTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             Assert.IsNotNull(doc.Sections);
             Assert.AreEqual(0, doc.Sections.Count());
 
@@ -82,11 +81,11 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void Epub_AddCSSResourceTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             Assert.IsNotNull(doc.Resources);
             Assert.AreEqual(0, doc.Resources.Count());
 
-            using FileStream fs = new FileStream("TestAssets\\test.css", FileMode.Open);
+            using var fs = new FileStream("TestAssets\\test.css", FileMode.Open);
 
             doc.AddResource("test.css", EpubResourceType.CSS, fs);
             Assert.AreEqual(1, doc.Resources.Count());
@@ -101,11 +100,11 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void Epub_AddImageResourceTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             Assert.IsNotNull(doc.Resources);
             Assert.AreEqual(0, doc.Resources.Count());
 
-            using FileStream fs = new FileStream("TestAssets\\test.png", FileMode.Open);
+            using var fs = new FileStream("TestAssets\\test.png", FileMode.Open);
 
             doc.AddResource("test.png", EpubResourceType.PNG, fs);
             Assert.AreEqual(1, doc.Resources.Count());
@@ -120,11 +119,11 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void Epub_AddFontResourceTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             Assert.IsNotNull(doc.Resources);
             Assert.AreEqual(0, doc.Resources.Count());
 
-            using FileStream fs = new FileStream("TestAssets\\test.ttf", FileMode.Open);
+            using var fs = new FileStream("TestAssets\\test.ttf", FileMode.Open);
 
             doc.AddResource("test.ttf", EpubResourceType.TTF, fs);
             Assert.AreEqual(1, doc.Resources.Count());
@@ -139,23 +138,23 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void Epub_ExportEpubTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             doc.AddSection("Section 1", "<p>This is section 1.</p>");
 
-            using FileStream fs = new FileStream("Epub_ExportEpubTest.epub", FileMode.Create);
+            using var fs = new FileStream("Epub_ExportEpubTest.epub", FileMode.Create);
             doc.Export(fs);
         }
 
         [TestMethod]
         public void Epub_ExportEpubWithCSSResourceTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             doc.AddSection("Section 1", "<p>This is section 1.</p>", "test.css");
 
-            using FileStream cssStream = new FileStream("TestAssets\\test.css", FileMode.Open);
+            using var cssStream = new FileStream("TestAssets\\test.css", FileMode.Open);
             doc.AddResource("test.css", EpubResourceType.CSS, cssStream);
 
-            using FileStream fs = new FileStream("Epub_ExportEpubWithCSSResourceTest.epub", FileMode.Create);
+            using var fs = new FileStream("Epub_ExportEpubWithCSSResourceTest.epub", FileMode.Create);
             doc.Export(fs);
         }
 
@@ -163,29 +162,29 @@ namespace QuickEPUB.Test
         [TestMethod]
         public void Epub_ExportEpubWithImageResourceTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             doc.AddSection("Section 1", "<p><img src=\"test.png\" alt=\"test\"/></p>");
 
-            using FileStream pngStream = new FileStream("TestAssets\\test.png", FileMode.Open);
+            using var pngStream = new FileStream("TestAssets\\test.png", FileMode.Open);
             doc.AddResource("test.png", EpubResourceType.PNG, pngStream);
 
-            using FileStream fs = new FileStream("Epub_ExportEpubWithImageResourceTest.epub", FileMode.Create);
+            using var fs = new FileStream("Epub_ExportEpubWithImageResourceTest.epub", FileMode.Create);
             doc.Export(fs);
         }
 
         [TestMethod]
         public void Epub_ExportEpubWithFontResourceTest()
         {
-            Epub doc = new Epub("Test Title", "Test Author");
+            var doc = new Epub("Test Title", "Test Author");
             doc.AddSection("Section 1", "<p style=\"font-family: Test;\">This is section 1.</p>", "test.css");
 
-            using FileStream cssStream = new FileStream("TestAssets\\test.css", FileMode.Open);
+            using var cssStream = new FileStream("TestAssets\\test.css", FileMode.Open);
             doc.AddResource("test.css", EpubResourceType.CSS, cssStream);
 
-            using FileStream ttfStream = new FileStream("TestAssets\\test.ttf", FileMode.Open);
+            using var ttfStream = new FileStream("TestAssets\\test.ttf", FileMode.Open);
             doc.AddResource("test.ttf", EpubResourceType.TTF, ttfStream);
 
-            using FileStream fs = new FileStream("Epub_ExportEpubWithFontResourceTest.epub", FileMode.Create);
+            using var fs = new FileStream("Epub_ExportEpubWithFontResourceTest.epub", FileMode.Create);
             doc.Export(fs);
         }
     }

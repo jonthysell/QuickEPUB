@@ -15,16 +15,11 @@ namespace QuickEPUB
         /// </summary>
         public string Title
         {
-            get
-            {
-                return _title;
-            }
+            get =>_title;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                {
                     throw new ArgumentNullException();
-                }
                 _title = value;
             }
         }
@@ -35,16 +30,11 @@ namespace QuickEPUB
         /// </summary>
         public string BodyHtml
         {
-            get
-            {
-                return _body;
-            }
+            get =>_body;
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                {
                     throw new ArgumentNullException();
-                }
                 _body = value;
             }
         }
@@ -53,29 +43,17 @@ namespace QuickEPUB
         /// <summary>
         /// Gets a value that indicates whether or not this <see cref="EpubSection"/> has a CSS file.
         /// </summary>
-        public bool HasCss
-        {
-            get
-            {
-                return !string.IsNullOrWhiteSpace(CssPath);
-            }
-        }
+        public bool HasCss =>!string.IsNullOrWhiteSpace(CssPath);
 
         /// <summary>
         /// The relative path to the CSS file (if any) for this <see cref="EpubSection"/>.
         /// </summary>
         public string CssPath
         {
-            get
-            {
-                return _cssPath;
-            }
-            set
-            {
-                _cssPath = value?.Trim() ?? "";
-            }
+            get => _cssPath;
+            set => _cssPath = value?.Trim() ?? string.Empty;
         }
-        private string _cssPath = "";
+        private string _cssPath = string.Empty;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EpubSection"/> class.

@@ -16,16 +16,11 @@ namespace QuickEPUB
         /// </summary>
         public string OutputPath
         {
-            get
-            {
-                return _outputPath;
-            }
+            get => _outputPath;
             private set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                {
                     throw new ArgumentNullException();
-                }
                 _outputPath = value;
             }
         }
@@ -41,27 +36,29 @@ namespace QuickEPUB
         /// </summary>
         public byte[] ResourceData
         {
-            get
-            {
-                return _resourceData;
-            }
-            private set
-            {
-                _resourceData = value ?? throw new ArgumentNullException();
-            }
+            get => _resourceData;
+            private set => _resourceData = value ?? throw new ArgumentNullException();
         }
         private byte[] _resourceData = null;
 
         /// <summary>
         /// The MIME type of this <see cref="EpubResource"/> file.
         /// </summary>
-        public string MediaType
+        public string MediaType => MediaTypeMapping[(int)ResourceType];
+
+        /// <summary>
+        /// The flag indicating whether to mark this <see cref="EpubResource"/> file as a cover.
+        /// </summary>
+        public bool IsCover
         {
-            get
-            {
-                return MediaTypeMapping[(int)ResourceType];
-            }
+            get => _isCover &&
+                   (ResourceType == EpubResourceType.JPEG ||
+                    ResourceType == EpubResourceType.GIF ||
+                    ResourceType == EpubResourceType.PNG ||
+                    ResourceType == EpubResourceType.SVG);
+            private set => _isCover = value;
         }
+        private bool _isCover = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EpubResource"/> class.
@@ -69,25 +66,26 @@ namespace QuickEPUB
         /// <param name="outputPath">The relative output path to store this <see cref="EpubResource"/> file within the EPUB.</param>
         /// <param name="resourceType">The type of this <see cref="EpubResource"/> file.</param>
         /// <param name="inputStream">The input stream of this <see cref="EpubResource"/> file.</param>
+        /// <param name="isCover">The flag indicating whether to mark the new <see cref="EpubResource"/> file as a cover.</param>
         /// <exception cref="ArgumentNullException">Thrown when the input stream is null.</exception>
-        public EpubResource(string outputPath, EpubResourceType resourceType, Stream inputStream)
+        public EpubResource(string outputPath, EpubResourceType resourceType, Stream inputStream, bool isCover = false)
         {
             OutputPath = outputPath;
             ResourceType = resourceType;
 
             if (inputStream is null)
-            {
                 throw new ArgumentNullException(nameof(inputStream));
+
+            using (var memoryStream = new MemoryStream())
+            {
+                inputStream.CopyTo(memoryStream);
+                ResourceData = memoryStream.ToArray();
             }
 
-            using (var ms = new MemoryStream())
-            {
-                inputStream.CopyTo(ms);
-                ResourceData = ms.ToArray();
-            }
+            IsCover = isCover;
         }
 
-        private static readonly string[] MediaTypeMapping = new string[]
+        private static readonly string[] MediaTypeMapping = new[]
         {
             "text/css",
             "image/jpeg",
@@ -95,7 +93,7 @@ namespace QuickEPUB
             "image/png",
             "image/svg+xml",
             "font/ttf",
-            "font/otf",
+            "font/otf"
         };
     }
 
@@ -131,6 +129,6 @@ namespace QuickEPUB
         /// <summary>
         /// An OTF font file.
         /// </summary>
-        OTF,
+        OTF
     }
 }
