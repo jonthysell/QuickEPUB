@@ -168,6 +168,7 @@ namespace QuickEPUB
                     Author,
                     uid,
                     lang,
+                    DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture),
                     itemStringBuilder.ToString(),
                     spineStringBuilder.ToString());
 
@@ -255,12 +256,13 @@ namespace QuickEPUB
                 <dc:creator>{1}</dc:creator>
                 <dc:identifier id="bookid">{2}</dc:identifier>
                 <dc:language>{3}</dc:language>
+                <meta property="dcterms:modified">{4}</meta>
               </metadata>
               <manifest>
                 <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
-            {4}  </manifest>
+            {5}  </manifest>
               <spine toc="ncx">
-            {5}  </spine>
+            {6}  </spine>
             </package>
             """;
 
